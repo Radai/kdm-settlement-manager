@@ -80,13 +80,13 @@
 				</div>
 
 				<div class="row">
-					<div class="col">
+					<div class="col-12 col-md-6">
 						<div class="row mt-2">
 							<div class="col-12 sheet-header">
 								Innovations
 							</div>
-							<div class="col-12 col-md-6" id="innovations-left"></div>
-							<div class="col-12 col-md-6" id="innovations-right"></div>
+							<div class="col-6" id="innovations-left"></div>
+							<div class="col-6" id="innovations-right"></div>
 						</div>
 						<div class="row mt-2">
 							<div class="col sheet-header">
@@ -98,13 +98,13 @@
 						</div>
 					</div>
 
-					<div class="col">
+					<div class="col-12 col-md-6">
 						<div class="row mt-2">
 							<div class="col-12 sheet-header">
 								Settlement Locations
 							</div>
-							<div class="col-12 col-md-6" id="locations-left"></div>
-							<div class="col-12 col-md-6" id="locations-right"></div>
+							<div class="col-6" id="locations-left"></div>
+							<div class="col-6" id="locations-right"></div>
 						</div>
 						<div class="row mt-2">
 							<div class="col sheet-header">
@@ -204,10 +204,10 @@
 					var milestone = data.game_assets.milestones_dictionary[milestones[i]];
 					
 					$milestoneevent1 += '<div class="row border-bottom border-right mt-1">'+
-						'<div class="col-6 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
+						'<div class="col-7 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
 							milestone.name+
 						'</div>'+
-						'<div class="col-6 event sheet-subheader" style="font-size: 13px;">'+
+						'<div class="col-5 event sheet-subheader" style="font-size: 13px;">'+
 							milestone.story_event+
 						'</div>'+
 					'</div>';
@@ -217,10 +217,10 @@
 					var milestone = data.game_assets.milestones_dictionary[milestones[i]];
 					
 					$milestoneevent2 += '<div class="row border-bottom border-right mt-1">'+
-						'<div class="col-6 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
+						'<div class="col-7 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
 							milestone.name+
 						'</div>'+
-						'<div class="col-6 event sheet-subheader" style="font-size: 13px;">'+
+						'<div class="col-5 event sheet-subheader" style="font-size: 13px;">'+
 							milestone.story_event+
 						'</div>'+
 					'</div>';
@@ -237,14 +237,14 @@
 					var innovation = data.game_assets.innovations[innovations[i]];
 
 					$innovationsleft += '<div class="row border-bottom">' + 
-						'<div class="col-6 sheet-subsubheader">' + innovation.name + '</div>' + 
+						'<div class="col-12 sheet-subsubheader">' + innovation.name + '</div>' + 
 						'</div>'
 				}
 				for(var i = parseInt(innovations.length/2)+1; i < innovations.length; i++){
 					var innovation = data.game_assets.innovations[innovations[i]];
 
 					$innovationsright += '<div class="row border-bottom">' + 
-						'<div class="col-6 sheet-subsubheader">' + innovation.name + '</div>' + 
+						'<div class="col-12 sheet-subsubheader">' + innovation.name + '</div>' + 
 						'</div>'
 				}
 				$("#innovations-left").append($innovationsleft);
