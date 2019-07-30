@@ -42,7 +42,7 @@
 				var $settlementList = "";
 				for (var i = 0; i < data.dashboard.settlements.length; i++) {
 					var sm = data.dashboard.settlements[i];
-					$settlementList += "<a href='/settlement.html?sid="+sm._id.$oid+"' class='list-group-item list-group-item-action'>" + sm.name + "</a>";
+					$settlementList += "<a href='settlement.html?sid="+sm._id.$oid+"' class='list-group-item list-group-item-action'>" + sm.name + "</a>";
 				}
 				$("#settlement-list").append($settlementList);
 			})
