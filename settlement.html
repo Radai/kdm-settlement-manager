@@ -1,0 +1,307 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+	<title>Settlement | KDM Settlement Tracker</title>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+	<style>
+		.sheet-header {
+			font-size: 1.25rem;
+		    font-weight: 300;
+		    text-align: left;
+		    align-self: center;
+		}
+		.sheet-subheader {
+			font-size: 1.1rem;
+			font-weight: 400;
+			align-self: center;
+		}
+		.sheet-subsubheader {
+			font-size: .9rem;
+			font-weight: 400;
+			align-self: center;
+		}
+		.h-40 {
+			height: 40px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid" >
+		<div class="row">
+			<div class="col-12 col-md-6 px-2 py-2" id="page-1" style="border-width: 2px; border-style: solid;">
+				<div class="row mt-2 border-bottom-xs">
+					<div class="col-12 col-md-3 border-right">
+						<div class="row h-40" >
+							<div class="col-3">
+								<input type="text" class="form-control text-center" value="1" style="width: 50px;" disabled>
+							</div>
+							<div class="col-9 sheet-header pl-4">
+								Survival Limit
+							</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-5">
+						<div class="row h-40">
+							<div class="col-6 col-md-6 sheet-header">Settlement Name</div>
+							<div class="col-6 col-md-6 sheet-subheader text-muted border-bottom" id="settlement-name"></div>
+						</div>
+					</div>
+					<div class="col-12 col-md-4">
+						<div class="row h-40">
+							<div class="col-6 sheet-header">X Death Count</div>
+							<div class="col-6">
+								<input type="number" class="form-control">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mt-2">
+					<div class="col-12 sheet-header border-bottom">
+						X Timeline
+					</div>
+					<div class="col-12 col-md-6" id="timeline-left"></div>
+					<div class="col-12 col-md-6" id="timeline-right"></div>
+				</div>
+
+				<div class="row mt-2">
+					<div class="col-12 sheet-header">
+						Milestone Story Events
+					</div>
+					<div class="col-12 col-md-6" id="milestone-left"></div>
+					<div class="col-12 col-md-6" id="milestone-right"></div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+						<div class="row mt-2">
+							<div class="col-12 sheet-header">
+								Innovations
+							</div>
+							<div class="col-12 col-md-6" id="innovations-left"></div>
+							<div class="col-12 col-md-6" id="innovations-right"></div>
+						</div>
+						<div class="row mt-2">
+							<div class="col sheet-header">
+								Principles
+							</div>
+							<div class="col-12" id="principles">
+								
+							</div>
+						</div>
+					</div>
+
+					<div class="col">
+						<div class="row mt-2">
+							<div class="col-12 sheet-header">
+								Settlement Locations
+							</div>
+							<div class="col-12 col-md-6" id="locations-left"></div>
+							<div class="col-12 col-md-6" id="locations-right"></div>
+						</div>
+						<div class="row mt-2">
+							<div class="col sheet-header">
+								Quarries
+							</div>
+							<div class="col-12" id="quarries"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	$(function(){
+		console.log("Page loaded");
+
+		var token = window.sessionStorage.getItem("token");
+		if(token != null){
+			$.ajax({
+				headers: {authorization: token},
+				url: "https://api.kdm-manager.com/settlement/get/" + window.location.href.match(/sid=([a-z0-9]*)/)[1],
+				method: "GET"
+			})
+			.done(function(data){
+				console.log("get settlement successful");
+				console.log(data);
+
+				// Settlement Name
+				var settlementname = data.sheet.name;
+				$("#settlement-name").text(settlementname);
+
+				var sheet = data.sheet;
+				var $timelineleft = "";
+				var $timelineright = "";
+				var lanternyear = data.lantern_year;
+
+				// Settlement Timeline
+				for (var i = 1; i < sheet.timeline.length/2; i++) {
+					var settlementevent = sheet.timeline[i].settlement_event;
+					var storyevent = sheet.timeline[i].story_event;
+					var nemesisencounter = sheet.timeline[i].nemesis_encounter;
+
+					var isChecked = "";
+					if(lanternyear <= i){
+						isChecked = "checked";
+					}
+					$timelineleft += 
+					'<div class="row border-bottom border-right">'+
+					'<div class="col-1 align-self-center">'+
+						'<input type="checkbox" class="form-check-inline" '+isChecked+'>'+
+					'</div>'+
+					'<div class="col-1 year">'+ sheet.timeline[i].year +
+					'</div>'+
+					'<div class="col-10 story-events">'+ 
+						(settlementevent != null ? data.game_assets.events[settlementevent[0].handle].name : "")  + 
+						" " + 
+						(storyevent != null ? data.game_assets.events[storyevent[0].handle].name : "") +  
+						" " + 
+						(nemesisencounter != null ? nemesisencounter[0].name : "" ) +
+					'</div>'+
+					'</div>';
+				}
+				for (var i = parseInt((sheet.timeline.length/2) + 1); i < sheet.timeline.length; i++) {
+					var settlementevent = sheet.timeline[i].settlement_event;
+					var storyevent = sheet.timeline[i].story_event;
+					var nemesisencounter = sheet.timeline[i].nemesis_encounter;
+
+					$timelineright += 
+					'<div class="row border-bottom">'+
+					'<div class="col-1 align-self-center">'+
+						'<input type="checkbox" class="form-check-inline">'+
+					'</div>'+
+					'<div class="col-1 year">'+ sheet.timeline[i].year +
+					'</div>'+
+					'<div class="col-10 story-events">'+ 
+						(settlementevent != null ? data.game_assets.events[settlementevent[0].handle].name : "")  + 
+						" " + 
+						(storyevent != null ? data.game_assets.events[storyevent[0].handle].name : "") +  
+						" " + 
+						(nemesisencounter != null ? nemesisencounter[0].name : "" ) +
+					'</div>'+
+					'</div>';
+				}
+
+				$("#timeline-left").append($timelineleft);
+				$("#timeline-right").append($timelineright);
+
+				// Milestone Story Events
+				var milestones = data.game_assets.campaign.milestones
+				var $milestoneevent1 = "";
+				var $milestoneevent2 = "";
+
+				for (var i = 0; i < parseInt(milestones.length/2)+1; i++){
+					// $milestoneevent1 
+					var milestone = data.game_assets.milestones_dictionary[milestones[i]];
+					
+					$milestoneevent1 += '<div class="row border-bottom border-right mt-1">'+
+						'<div class="col-6 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
+							milestone.name+
+						'</div>'+
+						'<div class="col-6 event sheet-subheader" style="font-size: 13px;">'+
+							milestone.story_event+
+						'</div>'+
+					'</div>';
+				}
+				for (var i = parseInt(milestones.length/2) + 1; i < milestones.length; i++){
+					// $milestoneevent2
+					var milestone = data.game_assets.milestones_dictionary[milestones[i]];
+					
+					$milestoneevent2 += '<div class="row border-bottom border-right mt-1">'+
+						'<div class="col-6 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
+							milestone.name+
+						'</div>'+
+						'<div class="col-6 event sheet-subheader" style="font-size: 13px;">'+
+							milestone.story_event+
+						'</div>'+
+					'</div>';
+				}
+
+				$("#milestone-left").append($milestoneevent1);
+				$("#milestone-right").append($milestoneevent2);
+
+				// Innovations
+				var innovations = data.sheet.innovations;
+				var $innovationsleft = "";
+				var $innovationsright = "";
+				for(var i = 0; i < parseInt(innovations.length/2)+1; i++){
+					var innovation = data.game_assets.innovations[innovations[i]];
+
+					$innovationsleft += '<div class="row border-bottom">' + 
+						'<div class="col-6 sheet-subsubheader">' + innovation.name + '</div>' + 
+						'</div>'
+				}
+				for(var i = parseInt(innovations.length/2)+1; i < innovations.length; i++){
+					var innovation = data.game_assets.innovations[innovations[i]];
+
+					$innovationsright += '<div class="row border-bottom">' + 
+						'<div class="col-6 sheet-subsubheader">' + innovation.name + '</div>' + 
+						'</div>'
+				}
+				$("#innovations-left").append($innovationsleft);
+				$("#innovations-right").append($innovationsright);
+
+				// Settlement Locations
+				var locations = data.sheet.locations;
+				var $locationsleft = "";
+				var $locationsright = "";
+				for(var i = 0; i < parseInt(locations.length/2); i++){
+					var location = data.game_assets.locations[locations[i]];
+
+					$locationsleft += '<div class="row border-bottom">' +
+						'<div class="col-12 sheet-subsubheader">' + location.name + '</div>'+
+						'</div>';
+				}
+				for(var i = parseInt(locations.length/2); i < locations.length; i++){
+					var location = data.game_assets.locations[locations[i]];
+
+					$locationsright += '<div class="row border-bottom">' +
+						'<div class="col-12 sheet-subsubheader">' + location.name + '</div>'+
+						'</div>';
+				}
+				$("#locations-left").append($locationsleft);
+				$("#locations-right").append($locationsright);
+
+				// Principles
+				var principles = data.game_assets.principles_options;
+				var $principles = "";
+				for(var i = 0; i < principles.length; i++){
+					var principle = principles[i];
+					$principles += '<div class="row border-bottom mt-1">'+
+									'<div class="col-4 sheet-subheader" style="font-size: 13px;">'+principle.name+'</div>'+
+									'<div class="col-4 sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline" />'+principle.options[Object.keys(principle.options)[0]].name+'</div>'+
+									'<div class="col-4 sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline" />'+principle.options[Object.keys(principle.options)[1]].name+'</div>'+
+								'</div>'
+				}
+				$("#principles").append($principles);
+
+				// Quarries
+				var quarries = data.sheet.quarries;
+				var $quarries = "";
+				for(var i = 0; i < quarries.length; i++){
+					var quarry = quarries[i];
+					$quarries += '<div class="row border-bottom mt-1">' +
+						'<div class="col-12">' + data.game_assets.monsters[quarry].name + '</div>'+
+						'</div>'
+				}
+				$("#quarries").append($quarries);
+			})
+			.fail(function(data){
+				alert("get settlement failed, check console for details");
+				console.log(data.responseText);
+			});
+		}else{
+			window.location.replace(window.location.href);
+		}
+	})
+</script>
+</html>

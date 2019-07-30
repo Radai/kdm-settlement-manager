@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+	<title>Dashboard | KDM Settlement Tracker</title>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col">
+				<div id="settlement-list" class="list-group">
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	$(function(){
+		console.log("Page loaded");
+
+		//get all settments for our token
+		var token = window.sessionStorage.getItem("token");
+		var userid = window.sessionStorage.getItem("userid");
+		if(token != null && userid != null){
+			$.ajax({
+				headers: {authorization: token},
+				url: "https://api.kdm-manager.com/user/dashboard/" + userid,
+				method: "GET"
+			})
+			.done(function(data){
+				console.log("get user dashboard successful");
+				console.log(data.dashboard);
+
+				var $settlementList = "";
+				for (var i = 0; i < data.dashboard.settlements.length; i++) {
+					var sm = data.dashboard.settlements[i];
+					$settlementList += "<a href='/settlement.html?sid="+sm._id.$oid+"' class='list-group-item list-group-item-action'>" + sm.name + "</a>";
+				}
+				$("#settlement-list").append($settlementList);
+			})
+			.fail(function(data){
+				alert("get user dashboard Failed, check console for details");
+				console.log(data.responseText);
+			});
+		}else{
+			window.location.replace(window.location.origin);
+		}
+	});
+</script>
+</html>

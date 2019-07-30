@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+	<title>Login | KDM Settlement Tracker</title>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>	
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row h-100 d-flex">
+			<div class="col-12 col-md-8 mx-auto align-self-center">
+				<h1 class="display-4 text-center">KDM Settlement Tracker Login</h1>
+				<form id="login-form">
+					<div class="form-row">
+						<div class="col-12 col-md-6 mx-auto">
+							<input type="text" class="form-control form-control-lg" name="Username" placeholder="Username" style="border-bottom-right-radius: 0;border-bottom-left-radius: 0; margin-bottom: -1px;" />
+							<input type="password" class="form-control form-control-lg mb-2" name="Password" placeholder="Password" style="border-top-left-radius: 0; border-top-right-radius: 0;" />
+							<button class="btn btn-primary btn-lg btn-block" id="btn-login" type="submit">Login</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+<script type="text/javascript">
+$(function(){
+	console.log("Page Loaded");
+
+	//check if token is active
+	var token = window.sessionStorage.getItem("token");
+	if(token != null){
+		$.ajax({
+			headers: {authorization: token},
+			url: "https://api.kdm-manager.com/authorization/check",
+			method: "GET"
+		})
+		.done(function(data){
+			//token still valid, redirect to dashboard
+			console.log("TOKEN GOOD");
+			window.location.replace(window.location.origin + "dashboard.html");
+		})
+		.fail(function(data){
+			//require re-auth
+			console.log("TOKEN BAD");
+		});
+	}else{
+		console.log("NO TOKEN IN STORAGE");
+	}
+});
+
+$("#btn-login").click(function(e){
+	e.preventDefault();
+
+	var loginModel = JSON.stringify({"username": $("[name=Username]").val(), "password": $("[name=Password]").val()});
+	$.ajax({
+		url: "https://api.kdm-manager.com/login",
+		method: "POST",
+		data: loginModel,
+		dataType: "json",
+		contentType: "application/json; charset=utf-8"
+	})
+	.done(function(data){
+		alert("login successful");
+		window.sessionStorage.setItem("token", data.access_token);
+		window.sessionStorage.setItem("userid", data._id);
+		//redirect to dashboard with settlement list
+		window.location.replace(window.location.href + "dashboard.html");
+	})
+	.fail(function(data){
+		alert("Login Failed, check console for details");
+		console.log(data.responseText);
+	});
+})
+</script>
+</body>
+</html>
