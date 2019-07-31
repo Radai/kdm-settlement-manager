@@ -1,0 +1,19 @@
+.sheet-header {
+	font-size: 1.25rem;
+    font-weight: 300;
+    text-align: left;
+    align-self: center;
+}
+.sheet-subheader {
+	font-size: 1.1rem;
+	font-weight: 400;
+	align-self: center;
+}
+.sheet-subsubheader {
+	font-size: .9rem;
+	font-weight: 400;
+	align-self: center;
+}
+.h-40 {
+	height: 40px;
+}

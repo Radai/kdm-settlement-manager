@@ -6,30 +6,13 @@
 	<title>Settlement | KDM Settlement Tracker</title>
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
+	<link rel="stylesheet" href="./css/rpg-awesome/rpg-awesome.min.css">
+	<link rel="stylesheet" href="./css/style.css">
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 	<style>
-		.sheet-header {
-			font-size: 1.25rem;
-		    font-weight: 300;
-		    text-align: left;
-		    align-self: center;
-		}
-		.sheet-subheader {
-			font-size: 1.1rem;
-			font-weight: 400;
-			align-self: center;
-		}
-		.sheet-subsubheader {
-			font-size: .9rem;
-			font-weight: 400;
-			align-self: center;
-		}
-		.h-40 {
-			height: 40px;
-		}
+
 	</style>
 </head>
 <body>
@@ -55,8 +38,8 @@
 					</div>
 					<div class="col-12 col-md-4">
 						<div class="row h-40">
-							<div class="col-6 sheet-header">X Death Count</div>
-							<div class="col-6">
+							<div class="col-7 sheet-header"><span class="ra ra-skull"></span>&nbsp;Death Count</div>
+							<div class="col-5">
 								<input type="number" class="form-control">
 							</div>
 						</div>
@@ -65,7 +48,7 @@
 
 				<div class="row mt-2">
 					<div class="col-12 sheet-header border-bottom">
-						X Timeline
+						<span class="ra ra-hourglass"></span>&nbsp;Timeline
 					</div>
 					<div class="col-12 col-md-6" id="timeline-left"></div>
 					<div class="col-12 col-md-6" id="timeline-right"></div>
@@ -163,9 +146,9 @@
 					'<div class="col-10 story-events">'+ 
 						(settlementevent != null ? data.game_assets.events[settlementevent[0].handle].name : "")  + 
 						" " + 
-						(storyevent != null ? data.game_assets.events[storyevent[0].handle].name : "") +  
+						(storyevent != null ? '<span title="Page: '+data.game_assets.events[storyevent[0].handle].page +'"><span class="ra ra-book"></span>&nbsp;' + data.game_assets.events[storyevent[0].handle].name : "") + "</span>" +  
 						" " + 
-						(nemesisencounter != null ? nemesisencounter[0].name : "" ) +
+						(nemesisencounter != null ? '<span class="ra ra-crossed-swords"></span>&nbsp;' + nemesisencounter[0].name : "" ) +
 					'</div>'+
 					'</div>';
 				}
@@ -184,9 +167,9 @@
 					'<div class="col-10 story-events">'+ 
 						(settlementevent != null ? data.game_assets.events[settlementevent[0].handle].name : "")  + 
 						" " + 
-						(storyevent != null ? data.game_assets.events[storyevent[0].handle].name : "") +  
+						(storyevent != null ? '<span title="Page: '+data.game_assets.events[storyevent[0].handle].page +'"><span class="ra ra-book"></span>&nbsp;' + data.game_assets.events[storyevent[0].handle].name : "") + "</span>" +  
 						" " + 
-						(nemesisencounter != null ? nemesisencounter[0].name : "" ) +
+						(nemesisencounter != null ? '<span class="ra ra-crossed-swords"></span>&nbsp;' + nemesisencounter[0].name : "" ) +
 					'</div>'+
 					'</div>';
 				}
@@ -199,101 +182,114 @@
 				var $milestoneevent1 = "";
 				var $milestoneevent2 = "";
 
-				for (var i = 0; i < parseInt(milestones.length/2)+1; i++){
-					// $milestoneevent1 
-					var milestone = data.game_assets.milestones_dictionary[milestones[i]];
-					
-					$milestoneevent1 += '<div class="row border-bottom border-right mt-1">'+
-						'<div class="col-7 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
-							milestone.name+
-						'</div>'+
-						'<div class="col-5 event sheet-subheader" style="font-size: 13px;">'+
-							milestone.story_event+
-						'</div>'+
-					'</div>';
-				}
-				for (var i = parseInt(milestones.length/2) + 1; i < milestones.length; i++){
-					// $milestoneevent2
-					var milestone = data.game_assets.milestones_dictionary[milestones[i]];
-					
-					$milestoneevent2 += '<div class="row border-bottom border-right mt-1">'+
-						'<div class="col-7 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
-							milestone.name+
-						'</div>'+
-						'<div class="col-5 event sheet-subheader" style="font-size: 13px;">'+
-							milestone.story_event+
-						'</div>'+
-					'</div>';
-				}
+				if(milestones.length > 0){
+					for (var i = 0; i < parseInt(milestones.length/2)+1; i++){
+						// $milestoneevent1 
+						var milestone = data.game_assets.milestones_dictionary[milestones[i]];
+						
+						$milestoneevent1 += '<div class="row border-bottom border-right mt-1">'+
+							'<div class="col-7 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
+								milestone.name+
+							'</div>'+
+							'<div class="col-5 event sheet-subheader" style="font-size: 13px;">'+
+								'<span title="Page: '+data.game_assets.events[milestone.story_event_handle].page +'"><span class="ra ra-book"></span>&nbsp;' + milestone.story_event+ '</span>' + 
+							'</div>'+
+						'</div>';
+					}
+					for (var i = parseInt(milestones.length/2) + 1; i < milestones.length; i++){
+						// $milestoneevent2
+						var milestone = data.game_assets.milestones_dictionary[milestones[i]];
+						$milestoneevent2 += '<div class="row border-bottom border-right mt-1">'+
+							'<div class="col-7 name sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline">'+
+								milestone.name+
+							'</div>'+
+							'<div class="col-5 event sheet-subheader" style="font-size: 13px;">'+
+								'<span title="Page: '+data.game_assets.events[milestone.story_event_handle].page +'"><span class="ra ra-book"></span>&nbsp;' + milestone.story_event+ '</span>' + 
+							'</div>'+
+						'</div>';
+					}
 
-				$("#milestone-left").append($milestoneevent1);
-				$("#milestone-right").append($milestoneevent2);
+					$("#milestone-left").append($milestoneevent1);
+					$("#milestone-right").append($milestoneevent2);
+				}
 
 				// Innovations
 				var innovations = data.sheet.innovations;
 				var $innovationsleft = "";
 				var $innovationsright = "";
-				for(var i = 0; i < parseInt(innovations.length/2)+1; i++){
-					var innovation = data.game_assets.innovations[innovations[i]];
 
-					$innovationsleft += '<div class="row border-bottom">' + 
-						'<div class="col-12 sheet-subsubheader">' + innovation.name + '</div>' + 
-						'</div>'
-				}
-				for(var i = parseInt(innovations.length/2)+1; i < innovations.length; i++){
-					var innovation = data.game_assets.innovations[innovations[i]];
+				if(innovations.length > 0){
+					for(var i = 0; i < parseInt(innovations.length/2)+1; i++){
+						var innovation = data.game_assets.innovations[innovations[i]];
 
-					$innovationsright += '<div class="row border-bottom">' + 
-						'<div class="col-12 sheet-subsubheader">' + innovation.name + '</div>' + 
-						'</div>'
+						$innovationsleft += '<div class="row border-bottom">' + 
+							'<div class="col-12 sheet-subsubheader">' + innovation.name + '</div>' + 
+							'</div>'
+					}
+					for(var i = parseInt(innovations.length/2)+1; i < innovations.length; i++){
+						var innovation = data.game_assets.innovations[innovations[i]];
+
+						$innovationsright += '<div class="row border-bottom">' + 
+							'<div class="col-12 sheet-subsubheader">' + innovation.name + '</div>' + 
+							'</div>'
+					}
+					$("#innovations-left").append($innovationsleft);
+					$("#innovations-right").append($innovationsright);
 				}
-				$("#innovations-left").append($innovationsleft);
-				$("#innovations-right").append($innovationsright);
 
 				// Settlement Locations
 				var locations = data.sheet.locations;
 				var $locationsleft = "";
 				var $locationsright = "";
-				for(var i = 0; i < parseInt(locations.length/2); i++){
-					var location = data.game_assets.locations[locations[i]];
 
-					$locationsleft += '<div class="row border-bottom">' +
-						'<div class="col-12 sheet-subsubheader">' + location.name + '</div>'+
-						'</div>';
-				}
-				for(var i = parseInt(locations.length/2); i < locations.length; i++){
-					var location = data.game_assets.locations[locations[i]];
+				if(locations.length>0){
+					for(var i = 0; i < parseInt(locations.length/2); i++){
+						var location = data.game_assets.locations[locations[i]];
 
-					$locationsright += '<div class="row border-bottom">' +
-						'<div class="col-12 sheet-subsubheader">' + location.name + '</div>'+
-						'</div>';
+						$locationsleft += '<div class="row border-bottom">' +
+							'<div class="col-12 sheet-subsubheader">' + location.name + '</div>'+
+							'</div>';
+					}
+					for(var i = parseInt(locations.length/2); i < locations.length; i++){
+						var location = data.game_assets.locations[locations[i]];
+
+						$locationsright += '<div class="row border-bottom">' +
+							'<div class="col-12 sheet-subsubheader">' + location.name + '</div>'+
+							'</div>';
+					}
+					$("#locations-left").append($locationsleft);
+					$("#locations-right").append($locationsright);
 				}
-				$("#locations-left").append($locationsleft);
-				$("#locations-right").append($locationsright);
 
 				// Principles
 				var principles = data.game_assets.principles_options;
 				var $principles = "";
-				for(var i = 0; i < principles.length; i++){
-					var principle = principles[i];
-					$principles += '<div class="row border-bottom mt-1">'+
-									'<div class="col-4 sheet-subheader" style="font-size: 13px;">'+principle.name+'</div>'+
-									'<div class="col-4 sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline" />'+principle.options[Object.keys(principle.options)[0]].name+'</div>'+
-									'<div class="col-4 sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline" />'+principle.options[Object.keys(principle.options)[1]].name+'</div>'+
-								'</div>'
+
+				if(principles.length > 0){
+					for(var i = 0; i < principles.length; i++){
+						var principle = principles[i];
+						$principles += '<div class="row border-bottom mt-1">'+
+										'<div class="col-4 sheet-subheader" style="font-size: 13px;">'+principle.name+'</div>'+
+										'<div class="col-4 sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline" />'+principle.options[Object.keys(principle.options)[0]].name+'</div>'+
+										(principle.option_handles.length > 1 ? '<div class="col-4 sheet-subheader" style="font-size: 11px;"><input type="checkbox" class="form-check-inline" />'+principle.options[Object.keys(principle.options)[1]].name+'</div>' : '') + 
+									'</div>'
+					}
+					$("#principles").append($principles);
 				}
-				$("#principles").append($principles);
 
 				// Quarries
 				var quarries = data.sheet.quarries;
 				var $quarries = "";
-				for(var i = 0; i < quarries.length; i++){
-					var quarry = quarries[i];
-					$quarries += '<div class="row border-bottom mt-1">' +
-						'<div class="col-12">' + data.game_assets.monsters[quarry].name + '</div>'+
-						'</div>'
+
+				if(quarries.length > 0){
+					for(var i = 0; i < quarries.length; i++){
+						var quarry = quarries[i];
+						$quarries += '<div class="row border-bottom mt-1">' +
+							'<div class="col-12">' + data.game_assets.monsters[quarry].name + '</div>'+
+							'</div>'
+					}
+					$("#quarries").append($quarries);
 				}
-				$("#quarries").append($quarries);
 			})
 			.fail(function(data){
 				alert("get settlement failed, check console for details");

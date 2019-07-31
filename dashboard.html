@@ -6,25 +6,233 @@
 	<title>Dashboard | KDM Settlement Tracker</title>
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 	<div class="container-fluid">
-		<div class="row">
-			<div class="col">
-				<div id="settlement-list" class="list-group">
-
+		<div class="row h-100 d-flex">
+			<div class="col-12 col-md-8 mx-auto align-self-center" style="max-width: 800px;">
+				<h1 class="display-4 text-center">Settlement List</h1>
+				<div id="settlement-list" class="list-group sheet-header"></div>
+				<div class="row">
+					<div class="col-12 text-right mt-2">
+						<button class="btn btn-danger" type="button" id="show-delete-btn">Delete</button>
+						<button class="btn btn-primary" type="button" data-toggle="modal" data-target="#create-new-settlement">Add</button>
+					</div>
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<!-- Add Modal -->
+	<div class="modal fade" tabindex="-1" role="dialog" id="create-new-settlement">
+  		<div class="modal-dialog" role="document">
+  			<form id="new-settlement-form">
+	    		<div class="modal-content">
+		      		<div class="modal-header">
+		        		<h5 class="modal-title">Create New Settlement</h5>
+		        		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          			<span aria-hidden="true">&times;</span>
+		        		</button>
+		      		</div>
+		      		<div class="modal-body">
+		      			<div class="form-group">
+		      				<label>Settlement Name</label>
+		      				<input type="text" name="Name" class="form-control" required>
+		      			</div>
+	        			<div class="form-group">
+	        				<label>Campaign</label>
+	        				<select name="Campaign" id="create-campaign" class="form-control" required>
+	        				</select>
+	        				<div class="invalid-feedback">
+	        					Please choose a campaign!
+	        				</div>
+	        			</div>
+	        			<div class="col-12 border border-top-0 sheet-header">
+	        				<p>Length: <span id="campaign-length"></span></p>
+	        				<p>Final Boss: <span id="campaign-final-boss"></span></p>
+	        			</div>
+	        			<div class="form-check form-check-inline mt-3">
+					  		<input class="form-check-input" type="checkbox" id="first-story-survivors">
+					  		<label class="form-check-label" >Create First Story Survivors (4)</label>
+						</div>
+		      		</div>
+		      		<div class="modal-footer">
+		        		<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		        		<button type="submit" class="btn btn-primary">Create</button>
+		      		</div>
+	    		</div>
+			</form>
+	  	</div>
+	</div>
+
+	<!-- Delete Modal -->
+	<div class="modal fade" tabindex="-1" role="dialog" id="delete-settlement-modal">
+  		<div class="modal-dialog" role="document">
+	    	<div class="modal-content">
+	      		<div class="modal-header">
+	        		<h5 class="modal-title">Delete a Settlement</h5>
+	        		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          			<span aria-hidden="true">&times;</span>
+	        		</button>
+	      		</div>
+	      		<div class="modal-body">
+	      			Are you sure you want to delete <b><span id="delete-settlement-name"></span></b>?
+	      		</div>
+	      		<div class="modal-footer">
+	        		<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	        		<button type="button" class="btn btn-danger" id="delete-settlement-btn">Delete</button>
+	      		</div>
+	    	</div>
+	  	</div>
+	</div>
+
+	<!-- Error Modal -->
+	<div class="modal fade" tabindex="-1" role="dialog" id="error-modal">
+  		<div class="modal-dialog" role="document">
+	    	<div class="modal-content">
+	      		<div class="modal-header">
+	        		<h5 class="modal-title">Error</h5>
+	        		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          			<span aria-hidden="true">&times;</span>
+	        		</button>
+	      		</div>
+	      		<div class="modal-body">
+	      			<span id="error-text"></span>
+	      		</div>
+	      		<div class="modal-footer">
+	        		<button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+	      		</div>
+	    	</div>
+	  	</div>
 	</div>
 </body>
 
 <script type="text/javascript">
 	$(function(){
 		console.log("Page loaded");
+
+		$("#show-delete-btn").click(function(e){
+			$(".delete-btn").toggleClass("invisible");
+
+			$(".delete-btn").off().click(function(e){
+				e.preventDefault();
+				var id = $(this).parent().data('id');
+				var name = $(this).parent().data('name');
+				$("#delete-settlement-name").text(name);
+				$("#delete-settlement-modal").modal("show");
+
+				$("#delete-settlement-btn").off().click(function(e){
+					$.ajax({
+						headers: {authorization: token},
+						url: "https://api.kdm-manager.com/settlement/remove/" + id,
+						method: "POST"
+					})
+					.done(function(data){
+						console.log("settlement removed");
+						console.log(data);
+						$(".modal").modal('hide');
+						location.reload();
+					})
+					.fail(function(data){
+						console.log("settlement remove Failed, check console for details");
+						console.log(data.responseText);
+						$(".modal").modal('hide');
+						$("#error-text").text(data.responseText);
+						$("#error-modal").modal('show');
+					});
+				});
+			});
+		})
+
+		$("#create-campaign").change(function(e){
+			$("#campaign-length").text($($("#create-campaign :selected")[0]).data("length") + " Lantern Years");
+			$("#campaign-final-boss").text($($("#create-campaign :selected")[0]).data("boss"));
+		});
+
+		// Create Settlement Submit
+		$("#new-settlement-form").submit(function(e){
+			e.preventDefault();
+
+			var firstStory = $("#first-story-survivors:checked").length>0;
+			var settlementJson = {"campaign": $($("#create-campaign :selected")[0]).val(), "name": $($("[name=Name]")[0]).val()};
+			if(firstStory){
+				settlementJson.special = ["create_first_story_survivors"];
+			}
+			var settlementModel = JSON.stringify(settlementJson);
+
+			$.ajax({
+				headers: {authorization: token},
+				url: "https://api.kdm-manager.com/new/settlement",
+				method: "POST",
+				data: settlementModel,
+				dataType: "json",
+				contentType: "application/json; charset=utf-8"
+			})
+			.done(function(data){
+				console.log("new settlement successful");
+				console.log(data);
+				$(".modal").modal('hide');
+				location.reload();
+			})
+			.fail(function(data){
+				console.log("create new settlement Failed, check console for details");
+				console.log(data.responseText);
+				$(".modal").modal('hide');
+				$("#error-text").text(data.responseText);
+				$("#error-modal").modal('show');
+			});
+		});
+
+		// Create Settlement Modal show
+		$("#create-new-settlement").on("show.bs.modal", function(e){
+			$.ajax({
+				headers: {authorization: token},
+				url: "https://api.kdm-manager.com/game_asset/campaigns",
+				method: "GET"
+			})
+			.done(function(data){
+				console.log(data);
+				var $options = "";
+				var keys = Object.keys(data);
+				for(var i = 0; i < keys.length; i++){
+					var finalboss = data[keys[i]].final_boss;
+					var str = finalboss.toLowerCase().split('_');
+					for (var k = 0; k < str.length; k++) {
+						str[k] = str[k].charAt(0).toUpperCase() + str[k].slice(1);
+					}
+					finalboss = str.join(' ');
+					$options += "<option value='"+data[keys[i]].handle+"' data-length='"+(data[keys[i]].timeline.length - 1)+"' data-boss='"+finalboss+"'>"+data[keys[i]].name+"</option>";
+				}
+				$("#create-campaign").html($options);
+
+				$("#campaign-length").text($($("#create-campaign :selected")[0]).data("length") + " Lantern Years");
+				$("#campaign-final-boss").text($($("#create-campaign :selected")[0]).data("boss"));
+			})
+			.fail(function(data){
+				alert("get campaigns Failed, check console for details");
+				console.log(data.responseText);
+				$(".modal").modal('hide');
+				$("#error-text").text(data.responseText);
+				$("#error-modal").modal('show');
+			});
+
+			// $.ajax({
+			// 	headers: {authorization: token},
+			// 	url: "https://api.kdm-manager.com/game_asset/expansions",
+			// 	method: "GET"
+			// })
+			// .done(function(data){
+			// 	//build options list
+			// })
+			// .fail(function(data){
+			// 	alert("get expansions Failed, check console for details");
+			// 	console.log(data.responseText);
+			// });
+		});
 
 		//get all settments for our token
 		var token = window.sessionStorage.getItem("token");
@@ -42,13 +250,16 @@
 				var $settlementList = "";
 				for (var i = 0; i < data.dashboard.settlements.length; i++) {
 					var sm = data.dashboard.settlements[i];
-					$settlementList += "<a href='settlement.html?sid="+sm._id.$oid+"' class='list-group-item list-group-item-action'>" + sm.name + "</a>";
+					$settlementList += "<a href='settlement.html?sid="+sm._id.$oid+"' data-id='"+sm._id.$oid+"' data-name='"+sm.name+"' class='list-group-item list-group-item-action'>" + sm.name + "<button class='float-right btn btn-danger delete-btn invisible'>X</button></a>";
 				}
 				$("#settlement-list").append($settlementList);
 			})
 			.fail(function(data){
 				alert("get user dashboard Failed, check console for details");
 				console.log(data.responseText);
+				$(".modal").modal('hide');
+				$("#error-text").text(data.responseText);
+				$("#error-modal").modal('show');
 			});
 		}else{
 			window.location.replace(window.location.origin);
