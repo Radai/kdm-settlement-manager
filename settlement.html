@@ -18,7 +18,7 @@
 <body>
 	<div class="container-fluid" >
 		<div class="row">
-			<div class="col-12 col-md-6 px-2 py-2" id="page-1" style="border-width: 2px; border-style: solid;">
+			<div class="col-12 col-md-6" id="page-1" style="border-width: 2px; border-style: solid;">
 				<div class="row mt-2 border-bottom-xs">
 					<div class="col-12 col-md-3 border-right">
 						<div class="row h-40" >
@@ -98,6 +98,78 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="col-12 col-md-6" id="page-2" style="border-width: 2px; border-style: solid; border-left: 0;">
+				<div class="row">
+					<div class="col-6">
+						<div class="row">
+							<div class="col-12 sheet-header">
+								Resource Storage
+							</div>
+							<div class="col-6" id="resources-left"></div>
+							<div class="col-6" id="resources-right"></div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="row">
+							<div class="col-12 sheet-header">
+								Gear Storage
+							</div>
+							<div class="col-6" id="gear-left"></div>
+							<div class="col-6" id="gear-right"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-4">
+						<div class="row">
+							<div class="col-12 sheet-header">
+								Nemesis Monsters
+							</div>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="row">
+							<div class="col-12 sheet-header">
+								Lantern Research
+							</div>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="row">
+							<div class="col-12 sheet-header">
+								Notes
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-4">
+						<div class="row h-40" >
+							<div class="col-3">
+								<input type="text" class="form-control text-center" value="1" style="width: 50px;" disabled>
+							</div>
+							<div class="col-9 sheet-header pl-4">
+								Population
+							</div>
+						</div>
+					</div>
+					<div class="offset-4 col-4">
+						<div class="row">
+							<div class="col-12 sheet-header">
+								Lost Settlements
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-12 sheet-subheader" id="population">
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>
@@ -124,7 +196,7 @@
 				var sheet = data.sheet;
 				var $timelineleft = "";
 				var $timelineright = "";
-				var lanternyear = data.lantern_year;
+				var lanternyear = data.sheet.lantern_year;
 
 				// Settlement Timeline
 				for (var i = 1; i < sheet.timeline.length/2; i++) {
@@ -133,7 +205,8 @@
 					var nemesisencounter = sheet.timeline[i].nemesis_encounter;
 
 					var isChecked = "";
-					if(lanternyear <= i){
+					
+					if(lanternyear >= i){
 						isChecked = "checked";
 					}
 					$timelineleft += 
@@ -289,6 +362,83 @@
 							'</div>'
 					}
 					$("#quarries").append($quarries);
+				}
+
+				// Resources & Gear dictionary
+				var gear = [];
+				var resources = [];
+				var gear_keys = Object.keys(data.game_assets.gear);
+				data.sheet.storage.forEach(function(v){ 
+					if(gear_keys.includes(v)){
+						gear.push(data.game_assets.gear[v]);
+					}else{
+						resources.push(data.game_assets.resources[v]);
+					}
+				});
+				//console.log(gear);
+				//console.log(resources);
+
+				// Resources
+				var $resourcesleft = "";
+				var $resourcesright = "";
+
+				if(resources.length>0){
+					for(var i = 0; i < parseInt(resources.length/2); i++){
+						var resource = resources[i];
+
+						$resourcesleft += '<div class="row border-bottom">' +
+							'<div class="col-12 sheet-subsubheader">' + resource.name + '</div>'+
+							'</div>';
+					}
+					for(var i = parseInt(resources.length/2); i < resources.length; i++){
+						var resource = resources[i];
+
+						$resourcesright += '<div class="row border-bottom">' +
+							'<div class="col-12 sheet-subsubheader">' + resource.name + '</div>'+
+							'</div>';
+					}
+					$("#resources-left").append($resourcesleft);
+					$("#resources-right").append($resourcesright);
+				}
+
+				// Gear
+				var $gearleft = "";
+				var $gearright = "";
+
+				if(gear.length>0){
+					for(var i = 0; i < parseInt(gear.length/2); i++){
+						var item = gear[i];
+
+						$gearleft += '<div class="row border-bottom">' +
+							'<div class="col-12 sheet-subsubheader">' + item.name + '</div>'+
+							'</div>';
+					}
+					for(var i = parseInt(gear.length/2); i < gear.length; i++){
+						var item = gear[i];
+
+						$gearright += '<div class="row border-bottom">' +
+							'<div class="col-12 sheet-subsubheader">' + item.name + '</div>'+
+							'</div>';
+					}
+					$("#gear-left").append($gearleft);
+					$("#gear-right").append($gearright);
+				}
+
+				// Population
+				var population = data.user_assets.survivors;
+				var $population = "";
+				
+				if(population.length > 0){
+					for(var i = 0; i < population.length; i++){
+						var survivor = population[i];
+
+						$population += '<div class="row border-bottom sheet-subsubheader">' + 
+							'<div class="col-6">' + survivor.sheet.name + '</div>'+
+							'<div class="col-3">' + survivor.sheet.sex + '</div>' +
+							'<div class="col-3">' + '</div>' + 
+							'</div>';
+					}
+					$("#population").append($population);
 				}
 			})
 			.fail(function(data){
